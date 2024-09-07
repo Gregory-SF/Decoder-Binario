@@ -74,7 +74,6 @@ static void jump_cond(Instruction *comando) {
 static void mov(Instruction *comando) {
     registers[comando->reg_dst] = comando->imediato;
     printf("regis[reg]: %u\n",registers[comando->reg_dst]);
-
 }
 
 static void syscall() {

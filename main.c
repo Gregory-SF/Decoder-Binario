@@ -26,7 +26,6 @@ int main (int argc, char **argv){
         }
         printf("memory[%d]: %d\n",g,memory[g]);
     }
-
     int cond = 1;
     Instruction comando;
     int i = 0;

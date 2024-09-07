@@ -9,4 +9,5 @@ static inline uint16_t extract_bits (const uint16_t v, const uint8_t bstart, con
 	const uint16_t mask = (1 << blength) - 1;
 	return ((v >> bstart) & mask);
 }
+
 #endif

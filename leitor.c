@@ -30,4 +30,5 @@ void load_binary_to_memory (const char *fname, void *memory, const uint32_t mem_
 	}
 	fclose(fp);
 }
+
 #endif
