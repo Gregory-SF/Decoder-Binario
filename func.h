@@ -5,7 +5,10 @@
 #include <stdint.h>  
 
 #define NUM_REGISTERS 8
+#define MEMORY_SIZE 1024
+
 uint16_t registers[NUM_REGISTERS] = {0};
+extern uint16_t memory[];
 
 typedef struct Instruction {
     int opcode;
@@ -18,19 +21,23 @@ typedef struct Instruction {
 
 static void add(Instruction comando) {
     registers[comando.reg_dst] = registers[comando.reg_1] + registers[comando.reg_2];
+    printf("Valor em register[%d]: %d, registers[%d]: %d, registers[%d]: %d\n", comando.reg_1, registers[comando.reg_1], comando.reg_2, registers[comando.reg_2], comando.reg_dst, registers[comando.reg_dst]);
 }
 
 static void sub(Instruction comando) {
     registers[comando.reg_dst] = registers[comando.reg_1] - registers[comando.reg_2];
+    printf("Valor em register[%d]: %d, registers[%d]: %d, registers[%d]: %d\n", comando.reg_1, registers[comando.reg_1], comando.reg_2, registers[comando.reg_2], comando.reg_dst, registers[comando.reg_dst]);
 }
 
 static void mul(Instruction comando) {
     registers[comando.reg_dst] = registers[comando.reg_1] * registers[comando.reg_2];
+    printf("Valor em register[%d]: %d, registers[%d]: %d, registers[%d]: %d\n", comando.reg_1, registers[comando.reg_1], comando.reg_2, registers[comando.reg_2], comando.reg_dst, registers[comando.reg_dst]);
 }
 
 static void divi(Instruction comando) {
     if (registers[comando.reg_2] != 0) {
         registers[comando.reg_dst] = registers[comando.reg_1] / registers[comando.reg_2];
+    printf("Valor em register[%d]: %d, registers[%d]: %d, registers[%d]: %d\n", comando.reg_1, registers[comando.reg_1], comando.reg_2, registers[comando.reg_2], comando.reg_dst, registers[comando.reg_dst]);
     } else {
         printf("Erro: Divisão por zero.\n");
     }
@@ -38,31 +45,32 @@ static void divi(Instruction comando) {
 
 static void cmp_equal(Instruction comando) {
     registers[comando.reg_dst] = (registers[comando.reg_1] == registers[comando.reg_2]) ? 1 : 0;
+    printf("Valor em registers[%d]: %d, valor em registers[%d]: %d\n", comando.reg_1, registers[comando.reg_1], comando.reg_2, registers[comando.reg_2]);
+    printf("Valor em registers[%d]: %d\n", comando.reg_dst, registers[comando.reg_dst]);
 }
 
 static void cmp_neq(Instruction comando) {
     registers[comando.reg_dst] = (registers[comando.reg_1] != registers[comando.reg_2]) ? 1 : 0;
+    printf("Valor em registers[%d]: %d, valor em registers[%d]: %d\n", comando.reg_1, registers[comando.reg_1], comando.reg_2, registers[comando.reg_2]);
+    printf("Valor em registers[%d]: %d\n", comando.reg_dst, registers[comando.reg_dst]);
 }
 
-void load(Instruction comando) {
-    registers[comando.reg_dst] = registers[comando.reg_1];
-    //registers[reg_dst] = &registers[reg1];
-    printf("regis[reg]: %u\n",registers[comando.reg_dst]);
-    printf("regis[reg1]: %u\n",registers[comando.reg_1]);
-    //printf("&pont[reg_dst]: %u\n",&registers[reg1]);
+static void load(Instruction comando) {
+    registers[comando.reg_dst] = memory[registers[comando.reg_1]];
+    printf("Valor em registers[%d]: %d, valor em registers[%d]: %d, valor na memória: %u\n", comando.reg_1, registers[comando.reg_1], comando.reg_dst, registers[comando.reg_dst],memory[registers[comando.reg_1]]);
 }
 
-void store(Instruction comando) {
-    registers[comando.reg_1] = registers[comando.reg_2];
-    //registers[reg_2] = &registers[reg_1];
-    printf("regis[reg2]: %u\n",registers[comando.reg_2]);
-    printf("regis[reg1]: %u\n",registers[comando.reg_1]);
-    //printf("&pont[reg2]: %u\n",&registers[reg_1]);
+static void store(Instruction comando) {
+    memory[registers[comando.reg_1]] = registers[comando.reg_2];
+    printf("Valor em regiters[%d]: %d, valor em registers[%d]: %d, valor na memória: %u\n", comando.reg_1, registers[comando.reg_1], comando.reg_2, registers[comando.reg_2], memory[registers[comando.reg_1]]);
+    int i;
+    for(i = 0; i <= registers[comando.reg_1]; i++){
+    printf("memory[%d]: %d\n",i,memory[i]);
+    }
 }
 
 static void jump(Instruction *comando) {
     comando->linha = comando->imediato-1;
-
 }
 
 static void jump_cond(Instruction *comando) {
@@ -73,28 +81,38 @@ static void jump_cond(Instruction *comando) {
 
 static void mov(Instruction *comando) {
     registers[comando->reg_dst] = comando->imediato;
-    printf("regis[reg]: %u\n",registers[comando->reg_dst]);
+    printf("Valor em registers[%d]: %d\n", comando->reg_dst, registers[comando->reg_dst]);
+}
+
+static void printar_registradores(){
+    int i;
+    for(i = 0; i < NUM_REGISTERS; i++){
+        printf("Registrador [%d]: %d\n", i, registers[i]);
+    }
 }
 
 static void syscall() {
-    if (registers[0]== 0) {
+    printar_registradores();
+    switch (registers[0]){
+    case 0:
         printf("Encerrando o programa.\n");
         exit(0); 
-    }
-    else if (registers[0] == 2){
-        printf("Registradores: %u\n",registers[1]);
-        printf("Valor do registrador: %u\n",registers[registers[1]]);
-    }
-    else {
+    case 2:
+        printf("\n");
+        break;
+    case 3:
+        printf("Valor em no registers[1]: %d\n",registers[1]);
+        break;
+    default:
         printf("Serviço do sistema não suportado ou não implementado: %u\n", registers[0]);
+        break;
     }
 }
 
-void execute_instructionr(Instruction comando) {
+void instruction_r(Instruction comando) {
     switch (comando.opcode) {
         case 0:
             add(comando);
-            printf("Valor em registers[2]: %u\n", registers[comando.reg_dst]);
             break;
         case 1:
             sub(comando);
@@ -115,7 +133,7 @@ void execute_instructionr(Instruction comando) {
             load(comando);
             break;
         case 16:
-            store(comando);  // reg1 é a fonte para store
+            store(comando); 
             break;
         case 63:
             syscall();
@@ -125,7 +143,7 @@ void execute_instructionr(Instruction comando) {
             break;
         }
     }
-void execute_instructioni(Instruction *comando) {
+void instruction_i(Instruction *comando) {
     switch (comando->opcode){
         case 0:
             printf("Imediato = %d, Linha = %d\n",comando->imediato,comando->linha);
@@ -133,7 +151,9 @@ void execute_instructioni(Instruction *comando) {
             printf("Imediato = %d, Linha = %d\n",comando->imediato,comando->linha);
             break;
         case 1:
+            printf("Valor em registers[dst] = %d, Imediato = %d, Linha = %d\n", comando->reg_dst, comando->imediato, comando->linha);
             jump_cond(comando);
+            printf("Valor em registers[dst] = %d, Imediato = %d, Linha = %d\n", comando->reg_dst, comando->imediato, comando->linha);
             break;
         case 3:
             mov(comando);
