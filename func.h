@@ -63,6 +63,10 @@ static void load(Instruction comando) {
 static void store(Instruction comando) {
     memory[registers[comando.reg_1]] = registers[comando.reg_2];
     printf("Valor em regiters[%d]: %d, valor em registers[%d]: %d, valor na memória: %u\n", comando.reg_1, registers[comando.reg_1], comando.reg_2, registers[comando.reg_2], memory[registers[comando.reg_1]]);
+    int i;
+    for(i = 0; i <= registers[comando.reg_1]; i++){
+    printf("memory[%d]: %d\n",i,memory[i]);
+    }
 }
 
 static void jump(Instruction *comando) {
@@ -91,13 +95,6 @@ static void syscall() {
     printar_registradores();
     switch (registers[0]){
     case 0:
-        int i;
-        for(i = 0; i < MEMORY_SIZE; i++){
-        if(i == 10){
-            break;
-        }
-        printf("memory[%d]: %d\n",i,memory[i]);
-    }
         printf("Encerrando o programa.\n");
         exit(0); 
     case 2:
