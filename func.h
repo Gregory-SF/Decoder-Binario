@@ -11,6 +11,7 @@ uint16_t registers[NUM_REGISTERS] = {0};
 extern uint16_t memory[];
 
 typedef struct Instruction {
+    uint16_t format;
     int opcode;
     int reg_dst;
     int reg_1;
@@ -18,6 +19,54 @@ typedef struct Instruction {
     int imediato;
     int linha;
 }Instruction;
+
+static void printar_registradores(){
+    int i;
+    for(i = 0; i < NUM_REGISTERS; i++){
+        printf("Registrador [%d]: %d\n", i, registers[i]);
+    }
+}
+
+static void printar_memory(){ 
+    int g;
+    for(g = 0; g < MEMORY_SIZE; g++){
+        if(g == 20){
+            break;
+        }
+        printf("memory[%d]: %d\n",g,memory[g]);
+    }
+}
+
+static void printar_Comando(Instruction comando){
+    printf("format: %d, ",comando.format);
+    if(comando.format == 0){
+        printf("opcode: %d, reg_dst: %d, reg_1: %d, reg_2: %d\n",comando.opcode,comando.reg_dst,comando.reg_1,comando.reg_2);
+    }
+    else {
+        printf("opcode: %d, reg_dst: %d, imediato: %d\n",comando.opcode,comando.reg_dst,comando.imediato);
+    }
+}           
+
+static uint16_t buscar_instrucao(int pc){
+    return memory[pc];
+}
+
+static void decodificar_instrucao(uint16_t instrucao, Instruction *comando){
+    comando->format = extract_bits(instrucao, 15,1);
+    switch (comando->format) {
+        case 0:
+            comando->opcode = extract_bits(instrucao, 9, 6);
+            comando->reg_dst = extract_bits(instrucao, 6, 3);
+            comando->reg_1 = extract_bits(instrucao, 3, 3);
+            comando->reg_2 = extract_bits(instrucao, 0, 3);
+            break;
+        case 1:
+            comando->opcode = extract_bits(instrucao, 13, 2);
+            comando->reg_dst = extract_bits(instrucao, 10, 3);
+            comando->imediato = extract_bits(instrucao, 0, 10);
+            break;
+    }
+}
 
 static void add(Instruction comando) {
     registers[comando.reg_dst] = registers[comando.reg_1] + registers[comando.reg_2];
@@ -84,17 +133,11 @@ static void mov(Instruction *comando) {
     printf("Valor em registers[%d]: %d\n", comando->reg_dst, registers[comando->reg_dst]);
 }
 
-static void printar_registradores(){
-    int i;
-    for(i = 0; i < NUM_REGISTERS; i++){
-        printf("Registrador [%d]: %d\n", i, registers[i]);
-    }
-}
-
 static void syscall() {
     printar_registradores();
     switch (registers[0]){
     case 0:
+        printar_memory();
         printf("Encerrando o programa.\n");
         exit(0); 
     case 2:

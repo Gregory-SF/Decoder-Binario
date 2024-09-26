@@ -15,39 +15,25 @@ int main (int argc, char **argv){
 		printf("usage: %s [bin_name]\n", argv[0]);
 		exit(1);
 	}
-    int g;
     load_binary_to_memory(argv[1], memory_pointer,MEMORY_SIZE);
-    for(g = 0; g < MEMORY_SIZE; g++){
-        if(g == 10){
-            break;
-        }
-        printf("memory[%d]: %d\n",g,memory[g]);
-    }
+    printar_memory();
     int cond = 1;
     Instruction comando;
-    int i = 1;
+    int pc = 1;
     while(cond){
-            comando.linha = i;
-            int format = extract_bits(memory[i], 15,1);
-            printf("Linha %d\n",i);
-            printf("format: %d, ",format);
-            if(format == 0){
-                comando.opcode = extract_bits(memory[i], 9, 6);
-                comando.reg_dst = extract_bits(memory[i], 6, 3);
-                comando.reg_1 = extract_bits(memory[i], 3, 3);
-                comando.reg_2 = extract_bits(memory[i], 0, 3);
-                printf("opcode: %d, reg_dst: %d, reg_1: %d, reg_2: %d\n",comando.opcode,comando.reg_dst,comando.reg_1,comando.reg_2);
+            uint16_t instrucao = buscar_instrucao(pc);
+            comando.linha = pc;
+            decodificar_instrucao(instrucao, &comando);
+            printf("Linha %d\n",pc);
+            printar_Comando(comando);
+            if(comando.format == 0){
                 instruction_r(comando);
             }
             else {
-                comando.opcode = extract_bits(memory[i], 13, 2);
-                comando.reg_dst = extract_bits(memory[i], 10, 3);
-                comando.imediato = extract_bits(memory[i], 0, 10);
-                printf("opcode: %d, reg_dst: %d, imediato: %d\n",comando.opcode,comando.reg_dst,comando.imediato);
                 instruction_i(&comando);
-                i = comando.linha;       
-                }
+                pc = comando.linha;       
+            }
             printf("--------------------\n");
-            i++;
+            pc++;
         }   
 }
