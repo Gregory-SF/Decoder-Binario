@@ -1,6 +1,6 @@
 <h1>Simulador para a disciplina de Arquitetura de Computadores.</h1> 
 <h2>Aviso</h2>
-<p>Esse simulador possui uma forte dependência com o seguinte assembler <link href = "https://github.com/ehmcruz/arq-sim-assembler"/>!</p>
+<p>Esse simulador possui uma forte dependência com o seguinte assembler https://github.com/ehmcruz/arq-sim-assembler !</p>
 <h2>Compilação</h2>
 <p>Para compilar o códigob basta usar o comando make.</p>
 <h2>Rodar</h2>
