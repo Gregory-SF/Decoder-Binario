@@ -30,7 +30,7 @@ static void printar_registradores(){
 static void printar_memory(){ 
     int g;
     for(g = 0; g < MEMORY_SIZE; g++){
-        if(g == 20){
+        if(g == 40){
             break;
         }
         printf("memory[%d]: %d\n",g,memory[g]);
@@ -140,6 +140,13 @@ static void syscall() {
         printar_memory();
         printf("Encerrando o programa.\n");
         exit(0); 
+    case 1:
+        int i = registers[1];
+        while(memory[i] != 0){
+            printf("%c", (char)memory[i]);
+            i++;
+        }
+        break;
     case 2:
         printf("\n");
         break;
@@ -152,69 +159,61 @@ static void syscall() {
     }
 }
 
-static void instruction_r(Instruction *comando) {
-    switch (comando->opcode) {
-        case 0:
-            add(comando);
-            break;
-        case 1:
-            sub(comando);
-            break;
-        case 2: 
-            mul(comando);
-            break;
-        case 3:
-            divi(comando);
-            break;
-        case 4:
-            cmp_equal(comando);
-            break;
-        case 5:
-            cmp_neq(comando);
-            break;
-        case 15:
-            load(comando);
-            break;
-        case 16:
-            store(comando); 
-            break;
-        case 63:
-            syscall();
-            break;
-        default:
-            printf("Erro: Opcode desconhecido.\n");
-            break;
-        }
-}
-
-static void instruction_i(Instruction *comando) {
-    switch (comando->opcode){
-        case 0:
-            printf("Imediato = %d, Linha = %d\n",comando->imediato,comando->linha);
-            jump(comando);
-            printf("Imediato = %d, Linha = %d\n",comando->imediato,comando->linha);
-            break;
-        case 1:
-            printf("Valor em registers[dst] = %d, Imediato = %d, Linha = %d\n", comando->reg_dst, comando->imediato, comando->linha);
-            jump_cond(comando);
-            printf("Valor em registers[dst] = %d, Imediato = %d, Linha = %d\n", comando->reg_dst, comando->imediato, comando->linha);
-            break;
-        case 3:
-            mov(comando);
-            break;
-        default:
-            printf("Erro: Opcode desconhecido.\n");
-            break;
-    }
-}
-
-void executar_instrucao(Instruction *comando){
+static void executar_instrucao(Instruction *comando){
     switch (comando->format) {
-        case 0:
-            instruction_r(comando);
+        case 0: // Instrução do tipo R
+            switch (comando->opcode) {
+                case 0:
+                    add(comando);
+                    break;
+                case 1:
+                    sub(comando);
+                    break;
+                case 2: 
+                    mul(comando);
+                    break;
+                case 3:
+                    divi(comando);
+                    break;
+                case 4:
+                    cmp_equal(comando);
+                    break;
+                case 5:
+                    cmp_neq(comando);
+                    break;
+                case 15:
+                    load(comando);
+                    break;
+                case 16:
+                    store(comando); 
+                    break;
+                case 63:
+                    syscall();
+                    break;
+                default:
+                    printf("Erro: Opcode desconhecido.\n");
+                    break;
+                }
             break;
-        case 1:
-            instruction_i(comando);
+        case 1: // Instrução do tipo I
+            switch (comando->opcode){
+                case 0:
+                    printf("Imediato = %d, Linha = %d\n",comando->imediato,comando->linha);
+                    jump(comando);
+                    printf("Imediato = %d, Linha = %d\n",comando->imediato,comando->linha);
+                    break;
+                case 1:
+                    printf("Valor em registers[dst] = %d, Imediato = %d, Linha = %d\n", comando->reg_dst, comando->imediato, comando->linha);
+                    jump_cond(comando);
+                    printf("Valor em registers[dst] = %d, Imediato = %d, Linha = %d\n", comando->reg_dst, comando->imediato, comando->linha);
+                    break;
+                case 3:
+                    mov(comando);
+                    break;
+                default:
+                    printf("Erro: Opcode desconhecido.\n");
+                    break;
+            }
             break;
     }
 }
