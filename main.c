@@ -26,14 +26,9 @@ int main (int argc, char **argv){
             decodificar_instrucao(instrucao, &comando);
             printf("Linha %d\n",pc);
             printar_Comando(comando);
-            if(comando.format == 0){
-                instruction_r(comando);
-            }
-            else {
-                instruction_i(&comando);
-                pc = comando.linha;       
-            }
+            executar_instrucao(&comando);
+            pc = comando.linha;
             printf("--------------------\n");
             pc++;
-        }   
+    }   
 }
