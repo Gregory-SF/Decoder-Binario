@@ -33,8 +33,8 @@ static void printar_memory(){
     printf("\n");
     int index;
     for(index = 0; index <= 100; index++){
-        //printf("memory[%d]: %d\n",index,memory[index]);
-        printf("%d ",memory[index]);
+        printf("memory[%d]: %d\n",index,memory[index]);
+        //printf("%d ",memory[index]);
     }
     printf("\n");
 }
@@ -43,6 +43,16 @@ static void printar_memory(){
 static uint16_t buscar_instrucao(){
     return memory[pc];
 }
+
+static void printar_Comando(Instruction comando){
+    printf("format: %d, ",comando.format);
+    if(comando.format == 0){
+        printf("opcode: %d, reg_dst: %d, reg_1: %d, reg_2: %d\n",comando.opcode,comando.reg_dst,comando.reg_1,comando.reg_2);
+    }
+    else {
+        printf("opcode: %d, reg_dst: %d, imediato: %d\n",comando.opcode,comando.reg_dst,comando.imediato);
+    }
+}           
 
 static void decodificar_instrucao(uint16_t instrucao, Instruction *comando){
     comando->format = extract_bits(instrucao, 15,1);
@@ -63,23 +73,23 @@ static void decodificar_instrucao(uint16_t instrucao, Instruction *comando){
 
 static void add(Instruction *comando) {
     registers[comando->reg_dst] = registers[comando->reg_1] + registers[comando->reg_2];
-    // printf("Valor em register[%d]: %d, registers[%d]: %d, registers[%d]: %d\n", comando->reg_1, registers[comando->reg_1], comando->reg_2, registers[comando->reg_2], comando->reg_dst, registers[comando->reg_dst]);
+    printf("Valor em register[%d]: %d, registers[%d]: %d, registers[%d]: %d\n", comando->reg_1, registers[comando->reg_1], comando->reg_2, registers[comando->reg_2], comando->reg_dst, registers[comando->reg_dst]);
 }
 
 static void sub(Instruction *comando) {
     registers[comando->reg_dst] = registers[comando->reg_1] - registers[comando->reg_2];
-    // printf("Valor em register[%d]: %d, registers[%d]: %d, registers[%d]: %d\n", comando->reg_1, registers[comando->reg_1], comando->reg_2, registers[comando->reg_2], comando->reg_dst, registers[comando->reg_dst]);
+    printf("Valor em register[%d]: %d, registers[%d]: %d, registers[%d]: %d\n", comando->reg_1, registers[comando->reg_1], comando->reg_2, registers[comando->reg_2], comando->reg_dst, registers[comando->reg_dst]);
 }
 
 static void mul(Instruction *comando) {
     registers[comando->reg_dst] = registers[comando->reg_1] * registers[comando->reg_2];
-    // printf("Valor em register[%d]: %d, registers[%d]: %d, registers[%d]: %d\n", comando->reg_1, registers[comando->reg_1], comando->reg_2, registers[comando->reg_2], comando->reg_dst, registers[comando->reg_dst]);
+    printf("Valor em register[%d]: %d, registers[%d]: %d, registers[%d]: %d\n", comando->reg_1, registers[comando->reg_1], comando->reg_2, registers[comando->reg_2], comando->reg_dst, registers[comando->reg_dst]);
 }
 
 static void divi(Instruction *comando) {
     if (registers[comando->reg_2] != 0) {
         registers[comando->reg_dst] = registers[comando->reg_1] / registers[comando->reg_2];
-    // printf("Valor em register[%d]: %d, registers[%d]: %d, registers[%d]: %d\n", comando->reg_1, registers[comando->reg_1], comando->reg_2, registers[comando->reg_2], comando->reg_dst, registers[comando->reg_dst]);
+    printf("Valor em register[%d]: %d, registers[%d]: %d, registers[%d]: %d\n", comando->reg_1, registers[comando->reg_1], comando->reg_2, registers[comando->reg_2], comando->reg_dst, registers[comando->reg_dst]);
     } else {
         printf("Erro: Divisão por zero.\n");
     }
@@ -87,24 +97,24 @@ static void divi(Instruction *comando) {
 
 static void cmp_equal(Instruction *comando) {
     registers[comando->reg_dst] = (registers[comando->reg_1] == registers[comando->reg_2]) ? 1 : 0;
-    // printf("Valor em registers[%d]: %d, valor em registers[%d]: %d\n", comando->reg_1, registers[comando->reg_1], comando->reg_2, registers[comando->reg_2]);
-    // printf("Valor em registers[%d]: %d\n", comando->reg_dst, registers[comando->reg_dst]);
+    printf("Valor em registers[%d]: %d, valor em registers[%d]: %d\n", comando->reg_1, registers[comando->reg_1], comando->reg_2, registers[comando->reg_2]);
+    printf("Valor em registers[%d]: %d\n", comando->reg_dst, registers[comando->reg_dst]);
 }
 
 static void cmp_neq(Instruction *comando) {
     registers[comando->reg_dst] = (registers[comando->reg_1] != registers[comando->reg_2]) ? 1 : 0;
-    // printf("Valor em registers[%d]: %d, valor em registers[%d]: %d\n", comando->reg_1, registers[comando->reg_1], comando->reg_2, registers[comando->reg_2]);
-    // printf("Valor em registers[%d]: %d\n", comando->reg_dst, registers[comando->reg_dst]);
+    printf("Valor em registers[%d]: %d, valor em registers[%d]: %d\n", comando->reg_1, registers[comando->reg_1], comando->reg_2, registers[comando->reg_2]);
+    printf("Valor em registers[%d]: %d\n", comando->reg_dst, registers[comando->reg_dst]);
 }
 
 static void load(Instruction *comando) {
     registers[comando->reg_dst] = memory[registers[comando->reg_1]];
-    // printf("Valor em registers[%d]: %d, valor em registers[%d]: %d, valor na memória: %u\n", comando->reg_1, registers[comando->reg_1], comando->reg_dst, registers[comando->reg_dst],memory[registers[comando->reg_1]]);
+    printf("Valor em registers[%d]: %d, valor em registers[%d]: %d, valor na memória: %u\n", comando->reg_1, registers[comando->reg_1], comando->reg_dst, registers[comando->reg_dst],memory[registers[comando->reg_1]]);
 }
 
 static void store(Instruction *comando) {
     memory[registers[comando->reg_1]] = registers[comando->reg_2];
-    // printf("Valor em regiters[%d]: %d, valor em registers[%d]: %d, valor na memória: %u\n", comando->reg_1, registers[comando->reg_1], comando->reg_2, registers[comando->reg_2], memory[registers[comando->reg_1]]);
+    printf("Valor em regiters[%d]: %d, valor em registers[%d]: %d, valor na memória: %u\n", comando->reg_1, registers[comando->reg_1], comando->reg_2, registers[comando->reg_2], memory[registers[comando->reg_1]]);
 }
 
 static void jump(Instruction *comando) {
@@ -119,7 +129,7 @@ static void jump_cond(Instruction *comando) {
 
 static void mov(Instruction *comando) {
     registers[comando->reg_dst] = comando->imediato;
-    // printf("Valor em registers[%d]: %d\n", comando->reg_dst, registers[comando->reg_dst]);
+    printf("Valor em registers[%d]: %d\n", comando->reg_dst, registers[comando->reg_dst]);
 }
 
 static void syscall() {
@@ -135,13 +145,14 @@ static void syscall() {
                 printf("%c", (char)memory[i]);
                 i++;
             }
+            printf("\n");
             break;
         case 2:
             printf("\n");
             break;
         case 3:
-            //printf("Valor em no registers[1]: %d\n",registers[1]);
-            printf("%d",registers[1]);
+            printf("Valor em no registers[1]: %d\n",registers[1]);
+            //printf("%d",registers[1]);
             break;
         default:
             printf("Serviço do sistema não suportado ou não implementado: %u\n", registers[0]);

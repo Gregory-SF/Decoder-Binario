@@ -23,10 +23,10 @@ int main (int argc, char **argv){
     while(cond){
             uint16_t instrucao = buscar_instrucao(pc);
             decodificar_instrucao(instrucao, &comando);
-            //printf("Linha %d\n",pc);
-            //printar_Comando(comando);
+            printf("Linha %d\n",pc);
+            printar_Comando(comando);
             executar_instrucao(&comando);
-            //printf("--------------------\n");
+            printf("--------------------\n");
             pc++;
     }   
 }
