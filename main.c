@@ -9,6 +9,7 @@
 
 uint16_t memory[MEMORY_SIZE];
 void *memory_pointer = memory;
+int pc = 1;
 
 int main (int argc, char **argv){
 	if (argc != 2) {
@@ -19,16 +20,13 @@ int main (int argc, char **argv){
     printar_memory();
     int cond = 1;
     Instruction comando;
-    int pc = 1;
     while(cond){
             uint16_t instrucao = buscar_instrucao(pc);
-            comando.linha = pc;
             decodificar_instrucao(instrucao, &comando);
-            printf("Linha %d\n",pc);
-            printar_Comando(comando);
+            //printf("Linha %d\n",pc);
+            //printar_Comando(comando);
             executar_instrucao(&comando);
-            pc = comando.linha;
-            printf("--------------------\n");
+            //printf("--------------------\n");
             pc++;
     }   
 }
