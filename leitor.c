@@ -1,5 +1,3 @@
-#ifndef __HEADER_SLA_H__
-#define __HEADER_SLA_H__
 #include <stdio.h>
 #include <stdlib.h>
 #include "lib.h"
@@ -30,5 +28,3 @@ void load_binary_to_memory (const char *fname, void *memory, const uint32_t mem_
 	}
 	fclose(fp);
 }
-
-#endif
